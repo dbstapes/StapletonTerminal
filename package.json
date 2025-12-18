@@ -6,6 +6,8 @@
     "start": "electron ."
   },
   "dependencies": {
-    "electron": "^8.0.0"
+    "cors": "^2.8.5",
+    "electron": "^8.0.0",
+    "express": "^4.22.1"
   }
 }

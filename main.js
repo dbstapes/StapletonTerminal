@@ -1,4 +1,7 @@
 const { app, BrowserWindow } = require('electron');
+const path = require('path');
+
+process.env.DB_PATH = path.join(app.getPath('userData'), 'optioncontracts.db');
 
 require('./server');
 

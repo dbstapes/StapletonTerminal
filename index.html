@@ -1,9 +1,73 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Hello World</title>
+  <title>Stapleton Terminal</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; display: flex; flex-direction: column; height: 100vh; }
+    header { background-color: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
+    footer { background-color: #333; color: white; padding: 10px; text-align: center; }
+    main { flex: 1; padding: 20px; }
+    .hamburger { cursor: pointer; font-size: 24px; }
+    .menu { display: none; position: absolute; background-color: white; border: 1px solid #ccc; list-style: none; padding: 0; margin: 0; top: 50px; right: 10px; }
+    .menu.show { display: block; }
+    .menu li { padding: 10px; cursor: pointer; }
+    .menu li:hover { background-color: #f0f0f0; }
+  </style>
 </head>
 <body>
-  <h1>Hello World!</h1>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState } = React;
+
+    function Component1() {
+      return <div><h2>Component 1</h2><p>This is the first component.</p></div>;
+    }
+
+    function Component2() {
+      return <div><h2>Component 2</h2><p>This is the second component.</p></div>;
+    }
+
+    function App() {
+      const [currentComponent, setCurrentComponent] = useState('component1');
+      const [menuOpen, setMenuOpen] = useState(false);
+
+      const renderComponent = () => {
+        switch (currentComponent) {
+          case 'component1':
+            return <Component1 />;
+          case 'component2':
+            return <Component2 />;
+          default:
+            return <Component1 />;
+        }
+      };
+
+      return (
+        <div>
+          <header>
+            <h1>Stapleton Terminal</h1>
+            <div className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>☰</div>
+            {menuOpen && (
+              <ul className="menu show">
+                <li onClick={() => { setCurrentComponent('component1'); setMenuOpen(false); }}>Component 1</li>
+                <li onClick={() => { setCurrentComponent('component2'); setMenuOpen(false); }}>Component 2</li>
+              </ul>
+            )}
+          </header>
+          <main>
+            {renderComponent()}
+          </main>
+          <footer>
+            <p>Footer</p>
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
 </body>
 </html>

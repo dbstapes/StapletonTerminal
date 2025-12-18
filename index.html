@@ -19,16 +19,10 @@
 </head>
 <body>
   <div id="root"></div>
+  <script type="text/babel" src="components/Component1.js"></script>
+  <script type="text/babel" src="components/Component2.js"></script>
   <script type="text/babel">
     const { useState } = React;
-
-    function Component1() {
-      return <div><h2>Component 1</h2><p>This is the first component.</p></div>;
-    }
-
-    function Component2() {
-      return <div><h2>Component 2</h2><p>This is the second component.</p></div>;
-    }
 
     function App() {
       const [currentComponent, setCurrentComponent] = useState('component1');

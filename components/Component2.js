@@ -2,6 +2,7 @@ function Component2() {
   const [contracts, setContracts] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ Ticker: '', Strike: '', Expiration: '', PurchaseOptionPrice: '' });
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchContracts();
@@ -48,6 +49,18 @@ function Component2() {
     fetchContracts();
   };
 
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      await fetch('http://localhost:3000/api/refresh-contracts', { method: 'POST' });
+      fetchContracts();
+    } catch (error) {
+      console.error('Refresh failed:', error);
+    } finally {
+      setRefreshing(false);
+    }
+  };
+
   return (
     <div>
       <h2>Option Contracts</h2>
@@ -76,6 +89,7 @@ function Component2() {
           </li>
         ))}
       </ul>
+      <button onClick={handleRefresh} disabled={refreshing}>{refreshing ? 'Refreshing...' : 'Refresh Data'}</button>
     </div>
   );
 }

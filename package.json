@@ -11,6 +11,7 @@
     "electron": "^8.0.0",
     "electron-store": "^8.2.0",
     "express": "^4.22.1",
+    "node-fetch": "^2.7.0",
     "sqlite3": "^5.1.7"
   }
 }

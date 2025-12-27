@@ -7,6 +7,10 @@ const store = new Store();
 
 process.env.DB_PATH = path.join(app.getPath('userData'), 'optioncontracts.db');
 
+// Load credentials on startup
+process.env.ALPACA_KEY = store.get('alpacaKey', '');
+process.env.ALPACA_SECRET = store.get('alpacaSecret', '');
+
 require('./server');
 
 ipcMain.handle('save-credentials', (event, { key, secret }) => {

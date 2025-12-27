@@ -15,8 +15,25 @@ db.serialize(() => {
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     Ticker TEXT NOT NULL,
     Strike REAL NOT NULL,
-    Expiration TEXT NOT NULL
+    Expiration TEXT NOT NULL,
+    IV REAL,
+    StockPrice REAL,
+    Delta REAL,
+    Gamma REAL,
+    Theta REAL,
+    Rho REAL,
+    CurrentOptionPrice REAL,
+    PurchaseOptionPrice REAL
   )`);
+  // Add columns if they don't exist
+  const columns = ['IV', 'StockPrice', 'Delta', 'Gamma', 'Theta', 'Rho', 'CurrentOptionPrice', 'PurchaseOptionPrice'];
+  columns.forEach(col => {
+    db.run(`ALTER TABLE optioncontracts ADD COLUMN ${col} REAL`, (err) => {
+      if (err && !err.message.includes('duplicate column name')) {
+        console.error(`Error adding column ${col}:`, err);
+      }
+    });
+  });
 });
 
 app.get('/api/optioncontracts', (req, res) => {
@@ -30,20 +47,20 @@ app.get('/api/optioncontracts', (req, res) => {
 });
 
 app.post('/api/optioncontracts', (req, res) => {
-  const { Ticker, Strike, Expiration } = req.body;
-  db.run('INSERT INTO optioncontracts (Ticker, Strike, Expiration) VALUES (?, ?, ?)', [Ticker, Strike, Expiration], function(err) {
+  const { Ticker, Strike, Expiration, IV, StockPrice, Delta, Gamma, Theta, Rho, CurrentOptionPrice, PurchaseOptionPrice } = req.body;
+  db.run('INSERT INTO optioncontracts (Ticker, Strike, Expiration, IV, StockPrice, Delta, Gamma, Theta, Rho, CurrentOptionPrice, PurchaseOptionPrice) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [Ticker, Strike, Expiration, IV, StockPrice, Delta, Gamma, Theta, Rho, CurrentOptionPrice, PurchaseOptionPrice], function(err) {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
     }
-    res.json({ id: this.lastID, Ticker, Strike, Expiration });
+    res.json({ id: this.lastID, Ticker, Strike, Expiration, IV, StockPrice, Delta, Gamma, Theta, Rho, CurrentOptionPrice, PurchaseOptionPrice });
   });
 });
 
 app.put('/api/optioncontracts/:id', (req, res) => {
   const id = req.params.id;
-  const { Ticker, Strike, Expiration } = req.body;
-  db.run('UPDATE optioncontracts SET Ticker = ?, Strike = ?, Expiration = ? WHERE id = ?', [Ticker, Strike, Expiration, id], function(err) {
+  const { Ticker, Strike, Expiration, IV, StockPrice, Delta, Gamma, Theta, Rho, CurrentOptionPrice, PurchaseOptionPrice } = req.body;
+  db.run('UPDATE optioncontracts SET Ticker = ?, Strike = ?, Expiration = ?, IV = ?, StockPrice = ?, Delta = ?, Gamma = ?, Theta = ?, Rho = ?, CurrentOptionPrice = ?, PurchaseOptionPrice = ? WHERE id = ?', [Ticker, Strike, Expiration, IV, StockPrice, Delta, Gamma, Theta, Rho, CurrentOptionPrice, PurchaseOptionPrice, id], function(err) {
     if (err) {
       res.status(500).json({ error: err.message });
       return;
@@ -52,7 +69,7 @@ app.put('/api/optioncontracts/:id', (req, res) => {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    res.json({ id, Ticker, Strike, Expiration });
+    res.json({ id, Ticker, Strike, Expiration, IV, StockPrice, Delta, Gamma, Theta, Rho, CurrentOptionPrice, PurchaseOptionPrice });
   });
 });
 

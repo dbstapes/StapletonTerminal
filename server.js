@@ -118,6 +118,7 @@ async function updateContractWithAPI(contract) {
   console.log('Key set:', !!process.env.ALPACA_KEY, 'Secret set:', !!process.env.ALPACA_SECRET);
   // Use Expiration directly as it's already YYYY-MM-DD
   const fixedDate = Expiration;
+  const url2 = `https://data.alpaca.markets/v2/stocks/${Ticker}/bars/latest`;
   const url = `https://data.alpaca.markets/v1beta1/options/snapshots/${Ticker}?feed=indicative&limit=1&strike_price_gte=${Strike}&strike_price_lte=${Strike}&expiration_date=${fixedDate}`;
   console.log('Fetching:', url);
   const auth = Buffer.from(`${process.env.ALPACA_KEY}:${process.env.ALPACA_SECRET}`).toString('base64');
@@ -146,9 +147,19 @@ async function updateContractWithAPI(contract) {
   const theta = snap.greeks.theta;
   const rho = snap.greeks.rho;
   const currentPrice = (snap.latestQuote.bp + snap.latestQuote.ap) / 2;
-  console.log('Updating with:', { iv, delta, gamma, theta, rho, currentPrice });
+  const response2 = await fetch(url2, {
+    headers: {
+      'Authorization': `Basic ${auth}`
+    }
+  });
+  const data2 = await response2.json();
+  const stockPrice = data2.bar.vw;
+  console.log('Stock price for', Ticker, 'is', stockPrice);
+  
+
+  console.log('Updating with:', { iv, delta, gamma, theta, rho, currentPrice, stockPrice });
   return new Promise((resolve, reject) => {
-    db.run('UPDATE optioncontracts SET IV = ?, Delta = ?, Gamma = ?, Theta = ?, Rho = ?, CurrentOptionPrice = ? WHERE id = ?', [iv, delta, gamma, theta, rho, currentPrice, contract.id], function(err) {
+    db.run('UPDATE optioncontracts SET IV = ?, Delta = ?, Gamma = ?, Theta = ?, Rho = ?, CurrentOptionPrice = ?, StockPrice = ? WHERE id = ?', [iv, delta, gamma, theta, rho, currentPrice, stockPrice, contract.id], function(err) {
       if (err) reject(err);
       else resolve();
     });

@@ -39,7 +39,7 @@ function Component2() {
     setForm({ 
       Ticker: contract.Ticker, 
       Strike: contract.Strike, 
-      Expiration: contract.Expiration.split('T')[0],
+      Expiration: contract.Expiration,
       PurchaseOptionPrice: contract.PurchaseOptionPrice || ''
     });
   };
@@ -65,7 +65,7 @@ function Component2() {
     <div>
       <h2>Option Contracts</h2>
       <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="Ticker" value={form.Ticker} onChange={(e) => setForm({...form, Ticker: e.target.value})} required />
+        <input type="text" placeholder="Ticker" value={form.Ticker} onChange={(e) => setForm({...form, Ticker: e.target.value.toUpperCase()})} required />
         <input type="number" placeholder="Strike" value={form.Strike} onChange={(e) => setForm({...form, Strike: e.target.value})} required />
         <input type="date" value={form.Expiration} onChange={(e) => setForm({...form, Expiration: e.target.value})} required />
         <input type="number" step="0.01" placeholder="Purchase Option Price" value={form.PurchaseOptionPrice} onChange={(e) => setForm({...form, PurchaseOptionPrice: e.target.value})} />
@@ -75,7 +75,7 @@ function Component2() {
       <ul>
         {contracts.map(contract => (
           <li key={contract.id}>
-            <div>{contract.Ticker} - Strike: {contract.Strike} - Exp: {new Date(contract.Expiration).toLocaleDateString()}</div>
+            <div>{contract.Ticker} - Strike: {contract.Strike} - Exp: {contract.Expiration}</div>
             {contract.IV && <div>IV: {contract.IV}</div>}
             {contract.StockPrice && <div>Stock Price: {contract.StockPrice}</div>}
             {contract.Delta && <div>Delta: {contract.Delta}</div>}

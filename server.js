@@ -116,13 +116,8 @@ app.post('/api/refresh-contracts', async (req, res) => {
 async function updateContractWithAPI(contract) {
   const { Ticker, Strike, Expiration } = contract;
   console.log('Key set:', !!process.env.ALPACA_KEY, 'Secret set:', !!process.env.ALPACA_SECRET);
-  // Construct OCC symbol for call
-  const exp = new Date(Expiration);
-  const yy = exp.getFullYear().toString();
-  const mm = (exp.getMonth() + 1).toString().padStart(2, '0');
-  const dd = exp.getDate().toString().padStart(2, '0');
-  const strikeStr = (Strike * 1000).toString().padStart(8, '0');
-  const fixedDate = `${yy}-${mm}-${dd}`;
+  // Use Expiration directly as it's already YYYY-MM-DD
+  const fixedDate = Expiration;
   const url = `https://data.alpaca.markets/v1beta1/options/snapshots/${Ticker}?feed=indicative&limit=1&strike_price_gte=${Strike}&strike_price_lte=${Strike}&expiration_date=${fixedDate}`;
   console.log('Fetching:', url);
   const auth = Buffer.from(`${process.env.ALPACA_KEY}:${process.env.ALPACA_SECRET}`).toString('base64');

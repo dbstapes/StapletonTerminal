@@ -29,6 +29,9 @@ function Component2() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
       });
+      // Refresh data after adding new contract
+      await handleRefresh();
+      return;
     }
     setForm({ Ticker: '', Strike: '', Expiration: '', PurchaseOptionPrice: '' });
     fetchContracts();

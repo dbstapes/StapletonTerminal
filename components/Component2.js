@@ -3,6 +3,7 @@ function Component2() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ Ticker: '', Strike: '', Expiration: '', PurchaseOptionPrice: '' });
   const [refreshing, setRefreshing] = useState(false);
+  const [accountBalance, setAccountBalance] = useState(0);
 
   useEffect(() => {
     fetchContracts();
@@ -67,6 +68,16 @@ function Component2() {
   return (
     <div>
       <h2>Option Contracts</h2>
+      <div style={{ marginBottom: '20px' }}>
+        <label>Account Balance: $</label>
+        <input 
+          type="number" 
+          step="0.01" 
+          value={accountBalance} 
+          onChange={(e) => setAccountBalance(parseFloat(e.target.value) || 0)}
+          style={{ marginLeft: '10px', padding: '5px' }}
+        />
+      </div>
       <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Ticker" value={form.Ticker} onChange={(e) => setForm({...form, Ticker: e.target.value.toUpperCase()})} required />
         <input type="number" placeholder="Strike" value={form.Strike} onChange={(e) => setForm({...form, Strike: e.target.value})} required />

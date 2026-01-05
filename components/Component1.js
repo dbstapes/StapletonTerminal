@@ -32,7 +32,7 @@ function Component1() {
       <h2>Alpaca API Credentials</h2>
       <div>
         <input 
-          type="text" 
+          type="password" 
           placeholder="Alpaca API Key" 
           value={key} 
           onChange={(e) => setKey(e.target.value)} 

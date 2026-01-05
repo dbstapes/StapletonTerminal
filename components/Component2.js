@@ -137,7 +137,14 @@ function Component2() {
         <p>Weighted Portfolio Leverage: {weightedLeverage.toFixed(4)}</p>
         <p>Kelly Fraction: {kellyFraction.toFixed(4)}</p>
         <p>Current Value (Total Contract Value / Account Balance): {currentValue.toFixed(4)}</p>
-        <p>Kelly Ratio (Current Value / Kelly Fraction): {kellyRatio.toFixed(4)}</p>
+        <p>Kelly Ratio: {kellyRatio.toFixed(4)}</p>
+        <div className="kelly-chart">
+          <div className="kelly-bar"></div>
+          <div className="kelly-marker" style={{ left: `${Math.max(0, Math.min(100, (1.5 - kellyRatio) / 1.5 * 100))}%` }}></div>
+        </div>
+        <div className="chart-labels">
+       
+        </div>
       </div>
       <button onClick={handleRefresh} disabled={refreshing}>{refreshing ? 'Refreshing...' : 'Refresh Data'}</button>
     </div>

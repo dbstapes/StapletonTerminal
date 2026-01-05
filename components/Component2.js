@@ -1,6 +1,5 @@
 function Component2() {
   const [contracts, setContracts] = useState([]);
-  const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState({ Ticker: '', Strike: '', Expiration: '', PurchaseOptionPrice: '' });
   const [refreshing, setRefreshing] = useState(false);
   const [accountBalance, setAccountBalance] = useState(0);
@@ -66,25 +65,14 @@ function Component2() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (editingId) {
-      await fetch(`http://localhost:3000/api/optioncontracts/${editingId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      });
-      setEditingId(null);
-    } else {
-      await fetch('http://localhost:3000/api/optioncontracts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form)
-      });
-      // Refresh data after adding new contract
-      await handleRefresh();
-      return;
-    }
+    await fetch('http://localhost:3000/api/optioncontracts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form)
+    });
+    // Refresh data after adding new contract
+    await handleRefresh();
     setForm({ Ticker: '', Strike: '', Expiration: '', PurchaseOptionPrice: '' });
-    fetchContracts();
   };
 
   const handleEdit = (contract) => {
@@ -124,7 +112,6 @@ function Component2() {
           step="0.01" 
           value={accountBalance} 
           onChange={(e) => setAccountBalance(parseFloat(e.target.value) || 0)}
-          style={{ marginLeft: '10px', padding: '5px' }}
         />
       </div>
       <form onSubmit={handleSubmit}>
@@ -132,27 +119,19 @@ function Component2() {
         <input type="number" placeholder="Strike" value={form.Strike} onChange={(e) => setForm({...form, Strike: e.target.value})} required />
         <input type="date" value={form.Expiration} onChange={(e) => setForm({...form, Expiration: e.target.value})} required />
         <input type="number" step="0.01" placeholder="Purchase Option Price" value={form.PurchaseOptionPrice} onChange={(e) => setForm({...form, PurchaseOptionPrice: e.target.value})} />
-        <button type="submit">{editingId ? 'Update' : 'Add'}</button>
-        {editingId && <button type="button" onClick={() => { setEditingId(null); setForm({ Ticker: '', Strike: '', Expiration: '', PurchaseOptionPrice: '' }); }}>Cancel</button>}
+        <button type="submit">Add</button>
       </form>
       <ul>
         {contracts.map(contract => (
           <li key={contract.id}>
-            <div>{contract.Ticker} - Strike: {contract.Strike} - Exp: {contract.Expiration}</div>
-            {contract.IV && <div>IV: {contract.IV}</div>}
-            {contract.StockPrice && <div>Stock Price: {contract.StockPrice}</div>}
-            {contract.Delta && <div>Delta: {contract.Delta}</div>}
-            {contract.Gamma && <div>Gamma: {contract.Gamma}</div>}
-            {contract.Theta && <div>Theta: {contract.Theta}</div>}
-            {contract.Rho && <div>Rho: {contract.Rho}</div>}
-            {contract.CurrentOptionPrice && <div>Current Option Price: {contract.CurrentOptionPrice}</div>}
-            {contract.PurchaseOptionPrice && <div>Purchase Option Price: {contract.PurchaseOptionPrice}</div>}
-            <button onClick={() => handleEdit(contract)}>Edit</button>
+            <div className="contract-info">
+              {contract.Ticker} - Strike: {contract.Strike} - Exp: {contract.Expiration} - Purchase: {contract.PurchaseOptionPrice} - Delta: {contract.Delta} - Current Price: {contract.CurrentOptionPrice}
+            </div>
             <button onClick={() => handleDelete(contract.id)}>Delete</button>
           </li>
         ))}
       </ul>
-      <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ccc' }}>
+      <div className="calculations">
         <h3>Kelly Criterion Calculations</h3>
         <p>Weighted Portfolio Delta: {weightedDelta.toFixed(4)}</p>
         <p>Weighted Portfolio Leverage: {weightedLeverage.toFixed(4)}</p>

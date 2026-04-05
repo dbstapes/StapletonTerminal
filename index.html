@@ -22,6 +22,7 @@
   <div id="root"></div>
   <script type="text/babel" src="components/Component1.js"></script>
   <script type="text/babel" src="components/Component2.js"></script>
+  <script type="text/babel" src="components/Component3.js"></script>
   <script type="text/babel">
     const { useState, useEffect } = React;
 
@@ -35,6 +36,8 @@
             return <Component1 />;
           case 'component2':
             return <Component2 />;
+          case 'component3':
+            return <Component3 />;
           default:
             return <Component2 />;
         }
@@ -49,6 +52,7 @@
               <ul className="menu show">
                 <li onClick={() => { setCurrentComponent('component1'); setMenuOpen(false); }}>Credentials</li>
                 <li onClick={() => { setCurrentComponent('component2'); setMenuOpen(false); }}>Contracts</li>
+                <li onClick={() => { setCurrentComponent('component3'); setMenuOpen(false); }}>Net Strategy Efficiency</li>
               </ul>
             )}
           </header>

@@ -1,8 +1,15 @@
-function Component2() {
+function Component2({
+  heading = 'Option Contracts',
+  visualizationRenderer,
+  onContractsChange
+}) {
   const [contracts, setContracts] = useState([]);
   const [form, setForm] = useState({ Ticker: '', Strike: '', Expiration: '', PurchaseOptionPrice: '' });
   const [refreshing, setRefreshing] = useState(false);
-  const [accountBalance, setAccountBalance] = useState(0);
+  const [accountBalance, setAccountBalance] = useState(() => {
+    const saved = window.localStorage.getItem('accountBalance');
+    return saved ? parseFloat(saved) || 0 : 0;
+  });
   const [weightedDelta, setWeightedDelta] = useState(0);
   const [weightedLeverage, setWeightedLeverage] = useState(0);
   const [kellyFraction, setKellyFraction] = useState(0);
@@ -16,6 +23,16 @@ function Component2() {
   useEffect(() => {
     calculateKelly();
   }, [contracts, accountBalance]);
+
+  useEffect(() => {
+    if (typeof onContractsChange === 'function') {
+      onContractsChange(contracts);
+    }
+  }, [contracts, onContractsChange]);
+
+  useEffect(() => {
+    window.localStorage.setItem('accountBalance', String(accountBalance || 0));
+  }, [accountBalance]);
 
   const calculateKelly = () => {
     if (contracts.length === 0) return;
@@ -102,9 +119,21 @@ function Component2() {
     }
   };
 
+  const defaultVisualization = (
+    <>
+      <div className="kelly-chart">
+        <div className="kelly-bar"></div>
+        <div className="kelly-marker" style={{ left: `${Math.max(0, Math.min(100, (1.5 - kellyRatio) / 1.5 * 100))}%` }}></div>
+      </div>
+      <div className="chart-labels">
+     
+      </div>
+    </>
+  );
+
   return (
     <div>
-      <h2>Option Contracts</h2>
+      <h2>{heading}</h2>
       <div style={{ marginBottom: '20px' }}>
         <label>Account Balance: $</label>
         <input 
@@ -138,13 +167,9 @@ function Component2() {
         <p>Kelly Fraction: {kellyFraction.toFixed(4)}</p>
         <p>Current Value (Total Contract Value / Account Balance): {currentValue.toFixed(4)}</p>
         <p>Kelly Ratio: {kellyRatio.toFixed(4)}</p>
-        <div className="kelly-chart">
-          <div className="kelly-bar"></div>
-          <div className="kelly-marker" style={{ left: `${Math.max(0, Math.min(100, (1.5 - kellyRatio) / 1.5 * 100))}%` }}></div>
-        </div>
-        <div className="chart-labels">
-       
-        </div>
+        {typeof visualizationRenderer === 'function'
+          ? visualizationRenderer({ contracts, accountBalance, weightedDelta, weightedLeverage, kellyFraction, currentValue, kellyRatio })
+          : defaultVisualization}
       </div>
       <button onClick={handleRefresh} disabled={refreshing}>{refreshing ? 'Refreshing...' : 'Refresh Data'}</button>
     </div>

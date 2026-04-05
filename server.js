@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
 const fetch = require('node-fetch');
+const { calculateNetStrategyEfficiency } = require('./utils/netStrategyEfficiency');
 
 const app = express();
 app.use(cors());
@@ -110,6 +111,29 @@ app.post('/api/refresh-contracts', async (req, res) => {
   } catch (error) {
     console.error('Refresh error:', error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/net-strategy-efficiency', (req, res) => {
+  const { S, leapTheta, leapPrice, sigma, r } = req.body || {};
+
+  if (
+    typeof S !== 'number' || Number.isNaN(S) ||
+    typeof leapTheta !== 'number' || Number.isNaN(leapTheta) ||
+    typeof leapPrice !== 'number' || Number.isNaN(leapPrice) ||
+    typeof sigma !== 'number' || Number.isNaN(sigma) ||
+    typeof r !== 'number' || Number.isNaN(r)
+  ) {
+    return res.status(400).json({
+      error: 'Invalid input. S, leapTheta, leapPrice, sigma, and r are required numeric fields.'
+    });
+  }
+
+  try {
+    const result = calculateNetStrategyEfficiency(S, leapTheta, leapPrice, sigma, r);
+    return res.json(result);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
 });
 

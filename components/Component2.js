@@ -1,7 +1,8 @@
 function Component2({
   heading = 'Option Contracts',
   visualizationRenderer,
-  onContractsChange
+  onContractsChange,
+  onAccountBalanceChange
 }) {
   const [contracts, setContracts] = useState([]);
   const [form, setForm] = useState({ Ticker: '', Strike: '', Expiration: '', PurchaseOptionPrice: '' });
@@ -29,6 +30,12 @@ function Component2({
       onContractsChange(contracts);
     }
   }, [contracts, onContractsChange]);
+
+  useEffect(() => {
+    if (typeof onAccountBalanceChange === 'function') {
+      onAccountBalanceChange(accountBalance);
+    }
+  }, [accountBalance, onAccountBalanceChange]);
 
   useEffect(() => {
     window.localStorage.setItem('accountBalance', String(accountBalance || 0));

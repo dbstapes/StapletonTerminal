@@ -3,6 +3,7 @@ const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
 const fetch = require('node-fetch');
 const { calculateNetStrategyEfficiency } = require('./utils/netStrategyEfficiency');
+const { generateOptionProjection } = require('./utils/optionsStrategyProjection');
 
 const app = express();
 app.use(cors());
@@ -131,6 +132,43 @@ app.post('/api/net-strategy-efficiency', (req, res) => {
 
   try {
     const result = calculateNetStrategyEfficiency(S, leapTheta, leapPrice, sigma, r);
+    return res.json(result);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
+  }
+});
+
+app.post('/api/options-strategy-projection', (req, res) => {
+  const {
+    r,
+    bankroll,
+    crunchLimit = 0.40,
+    simulationDays,
+    portfolioContracts = []
+  } = req.body || {};
+
+  const requiredFields = { r, bankroll, crunchLimit };
+  const invalidField = Object.entries(requiredFields).find(([, value]) => typeof value !== 'number' || Number.isNaN(value));
+  if (invalidField) {
+    return res.status(400).json({ error: `Invalid input. ${invalidField[0]} must be numeric.` });
+  }
+
+  if (simulationDays !== undefined && (typeof simulationDays !== 'number' || Number.isNaN(simulationDays))) {
+    return res.status(400).json({ error: 'Invalid input. simulationDays must be numeric when provided.' });
+  }
+
+  if (!Array.isArray(portfolioContracts)) {
+    return res.status(400).json({ error: 'Invalid input. portfolioContracts must be an array.' });
+  }
+
+  try {
+    const result = generateOptionProjection({
+      r,
+      bankroll,
+      crunchLimit,
+      simulationDays,
+      portfolioContracts
+    });
     return res.json(result);
   } catch (error) {
     return res.status(400).json({ error: error.message });

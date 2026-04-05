@@ -6,6 +6,7 @@
   <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
   <style>
     body { margin: 0; font-family: Arial, sans-serif; display: flex; flex-direction: column; height: 100vh; }
     header { background-color: #333; color: white; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
@@ -23,6 +24,7 @@
   <script type="text/babel" src="components/Component1.js"></script>
   <script type="text/babel" src="components/Component2.js"></script>
   <script type="text/babel" src="components/Component3.js"></script>
+  <script type="text/babel" src="components/Component4.js"></script>
   <script type="text/babel">
     const { useState, useEffect } = React;
 
@@ -38,6 +40,8 @@
             return <Component2 />;
           case 'component3':
             return <Component3 />;
+          case 'component4':
+            return <Component4 />;
           default:
             return <Component2 />;
         }
@@ -53,6 +57,7 @@
                 <li onClick={() => { setCurrentComponent('component1'); setMenuOpen(false); }}>Credentials</li>
                 <li onClick={() => { setCurrentComponent('component2'); setMenuOpen(false); }}>Contracts</li>
                 <li onClick={() => { setCurrentComponent('component3'); setMenuOpen(false); }}>Net Strategy Efficiency</li>
+                <li onClick={() => { setCurrentComponent('component4'); setMenuOpen(false); }}>Projection Engine</li>
               </ul>
             )}
           </header>
